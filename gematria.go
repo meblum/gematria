@@ -90,10 +90,11 @@ func Value(str string) (int64, error) {
 	var sum int64
 	for _, r := range str {
 
-		sum, ok := add(sum, int64(runeValues[r]))
+		result, ok := add(sum, int64(runeValues[r]))
+		sum = result
 
 		if !ok {
-			return sum, fmt.Errorf("string is too long")
+			return result, fmt.Errorf("string is too long")
 		}
 	}
 	return sum, nil
