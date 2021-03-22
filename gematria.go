@@ -89,10 +89,23 @@ var runeValues = map[rune]int{
 func Value(str string) (int64, error) {
 	var sum int64
 	for _, r := range str {
-		sum += int64(runeValues[r])
-		if sum < 0 {
-			return 0, fmt.Errorf("string is too long")
+
+		sum, ok := add(sum, int64(runeValues[r]))
+
+		if !ok {
+			return sum, fmt.Errorf("string is too long")
 		}
 	}
 	return sum, nil
+}
+
+// add returns the sum of its arguments and a boolean flag which is false if the result overflows an int64.
+func add(a, b int64) (value int64, ok bool) {
+	result := a + b
+	//Overflow if both arguments have the opposite sign of the result.
+	if ((a ^ result) & (b ^ result)) < 0 {
+		return result, false
+	}
+
+	return result, true
 }
