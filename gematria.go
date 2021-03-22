@@ -1,5 +1,7 @@
 package gematria
 
+import "fmt"
+
 var runeValues = map[rune]int{
 	rune(1488): 1,
 	rune(1489): 2,
@@ -81,4 +83,16 @@ var runeValues = map[rune]int{
 	rune(64333): 20,
 	rune(64334): 80,
 	rune(64335): 31, //alef lamed
+}
+
+// Value returns the gematria value of str
+func Value(str string) (int64, error) {
+	var sum int64
+	for _, r := range str {
+		sum += int64(runeValues[r])
+		if sum < 0 {
+			return 0, fmt.Errorf("string is too long")
+		}
+	}
+	return sum, nil
 }
