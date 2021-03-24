@@ -1,6 +1,12 @@
+// Package gematria implements encoding of hebrew string into its gematria value.
+//
+// The exact mapping between letters and numbers is described in the
+// documentation for the Value() function.
 package gematria
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var runeValues = map[rune]int{
 	rune(1488): 1,
@@ -26,28 +32,28 @@ var runeValues = map[rune]int{
 	rune(1513): 300,
 	rune(1514): 400,
 
-	rune(1478): 50, // nun hufich
+	rune(1478): 50, // Nun Hafukha
 
-	rune(1519): 30, //triple yid
-	rune(1520): 12, //double vuv
-	rune(1521): 16, //vuv yid
-	rune(1522): 20, //yid yid
+	rune(1519): 30, // Yod Triangle
+	rune(1520): 12, // Double Vav
+	rune(1521): 16, // Vav Yod
+	rune(1522): 20, // Double Yod
 
-	rune(1498): 20, //enda
-	rune(1501): 40, //enda
-	rune(1503): 50, //enda
-	rune(1507): 80, //enda
-	rune(1509): 90, //enda
+	rune(1498): 20, // Final Kaf
+	rune(1501): 40, // Final Mem
+	rune(1503): 50, // Final Nun
+	rune(1507): 80, // Final Pe
+	rune(1509): 90, // Final Tsadi
 
 	rune(64285): 10,
-	rune(64287): 20, //double yid
+	rune(64287): 20, // Double Yod
 	rune(64288): 70,
 	rune(64289): 1,
 	rune(64290): 4,
 	rune(64291): 5,
 	rune(64292): 20,
 	rune(64293): 30,
-	rune(64294): 40, //enda
+	rune(64294): 40, // Final Mem
 	rune(64295): 200,
 	rune(64296): 400,
 	rune(64298): 300,
@@ -65,13 +71,13 @@ var runeValues = map[rune]int{
 	rune(64310): 7,
 	rune(64312): 9,
 	rune(64313): 10,
-	rune(64314): 20, // ENDA
+	rune(64314): 20, // Final Kaf
 	rune(64315): 20,
 	rune(64316): 30,
 	rune(64318): 40,
 	rune(64320): 50,
 	rune(64321): 60,
-	rune(64323): 80, //enda
+	rune(64323): 80, // Final Pe
 	rune(64324): 80,
 	rune(64326): 90,
 	rune(64327): 100,
@@ -82,15 +88,18 @@ var runeValues = map[rune]int{
 	rune(64332): 2,
 	rune(64333): 20,
 	rune(64334): 80,
-	rune(64335): 31, //alef lamed
+	rune(64335): 31, // Alef Lamed
 }
 
-// Value returns the gematria value of str
-func Value(str string) (int64, error) {
-	var sum int64
+// Value returns the gematria value of str, and an error if result has overflowed.
+// Value is calculated using the standard encoding,
+// assigning the values 1–9, 10–90, 100–400 to the 22 Hebrew letters in order.
+// Final letters have the value as the non-final. Non Hebrew characters are ignored.
+func Value(str string) (int, error) {
+	var sum int
 	for _, r := range str {
 
-		result, ok := add(sum, int64(runeValues[r]))
+		result, ok := add(sum, int(runeValues[r]))
 		sum = result
 
 		if !ok {
@@ -100,8 +109,8 @@ func Value(str string) (int64, error) {
 	return sum, nil
 }
 
-// add returns the sum of its arguments and a boolean flag which is false if the result overflows an int64.
-func add(a, b int64) (value int64, ok bool) {
+// add returns the sum of its arguments and a boolean flag which is false if the result overflows an int.
+func add(a, b int) (value int, ok bool) {
 	result := a + b
 	//Overflow if both arguments have the opposite sign of the result.
 	if ((a ^ result) & (b ^ result)) < 0 {

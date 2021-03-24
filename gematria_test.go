@@ -1,7 +1,6 @@
 package gematria
 
 import (
-	"math"
 	"testing"
 )
 
@@ -31,6 +30,7 @@ func TestValue(t *testing.T) {
 	}
 
 }
+
 func TestAdd(t *testing.T) {
 	v, ok := add(100, 100)
 	if v != 200 || !ok {
@@ -44,11 +44,15 @@ func TestAdd(t *testing.T) {
 	if v != 0 || !ok {
 		t.Error(v, ok)
 	}
-	v, ok = add(math.MaxInt64, 1)
+
+	const MaxInt64 = 1<<63 - 1
+	const MinInt64 = -1 << 63
+
+	_, ok = add(MaxInt64, 1)
 	if ok {
 		t.Error(ok)
 	}
-	v, ok = add(math.MinInt64, -1)
+	_, ok = add(MinInt64, -1)
 	if ok {
 		t.Error(ok)
 	}
