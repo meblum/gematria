@@ -4,9 +4,7 @@
 // documentation for the Value() function.
 package gematria
 
-import (
-	"fmt"
-)
+import "errors"
 
 var runeValues = map[rune]int{
 	rune(1488): 1,
@@ -103,7 +101,7 @@ func Value(str string) (int, error) {
 		sum = result
 
 		if !ok {
-			return result, fmt.Errorf("string is too long")
+			return result, errors.New("string is too long")
 		}
 	}
 	return sum, nil
